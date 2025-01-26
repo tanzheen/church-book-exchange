@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -16,21 +16,22 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { books } from '../utils/api';
-import { useAuth } from '../hooks/useAuth';
-import BookCard from '../components/BookCard';
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { books } from "../utils/api";
+import { useAuth } from "../hooks/useAuth";
+import BookCard from "../components/BookCard";
+import supabase from "../config/supabaseClient";
 
 const ITEMS_PER_PAGE = 9;
 const CATEGORIES = [
-  'Fiction',
-  'Non-Fiction',
-  'Christian Living',
-  'Bible Study',
-  'Biography',
-  'Children',
-  'Other',
+  "Fiction",
+  "Non-Fiction",
+  "Christian Living",
+  "Bible Study",
+  "Biography",
+  "Children",
+  "Other",
 ];
 
 const Books = () => {
@@ -41,35 +42,39 @@ const Books = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState({
-    search: '',
-    category: '',
-    status: 'Available',
+    search: "",
+    category: "",
+    status: "Available",
   });
   const [selectedBook, setSelectedBook] = useState(null);
   const [exchangeDialogOpen, setExchangeDialogOpen] = useState(false);
-  const [exchangeMessage, setExchangeMessage] = useState('');
+  const [exchangeMessage, setExchangeMessage] = useState("");
   const [exchangeLoading, setExchangeLoading] = useState(false);
+  const [books, setBooks] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("books") // replace 'books' with your table name
+          .select("*");
+
+        if (error) throw error;
+        setBooks(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   useEffect(() => {
     fetchBooks();
   }, [page, filters]);
-
-  const fetchBooks = async () => {
-    setLoading(true);
-    try {
-      const { data } = await books.getAll({
-        ...filters,
-        page,
-        limit: ITEMS_PER_PAGE,
-      });
-      setBooksList(data.books || data);
-      setTotalPages(Math.ceil((data.total || data.length) / ITEMS_PER_PAGE));
-    } catch (error) {
-      console.error('Error fetching books:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFilterChange = (event) => {
     const { name, value } = event.target;
@@ -79,7 +84,7 @@ const Books = () => {
 
   const handleExchange = (book) => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     setSelectedBook(book);
@@ -96,10 +101,10 @@ const Books = () => {
         requestMessage: exchangeMessage,
       });
       setExchangeDialogOpen(false);
-      setExchangeMessage('');
+      setExchangeMessage("");
       fetchBooks(); // Refresh the books list
     } catch (error) {
-      console.error('Error requesting exchange:', error);
+      console.error("Error requesting exchange:", error);
     } finally {
       setExchangeLoading(false);
     }
@@ -162,7 +167,7 @@ const Books = () => {
 
       {/* Books Grid */}
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
           <CircularProgress />
         </Box>
       ) : (
@@ -177,7 +182,7 @@ const Books = () => {
 
           {/* No Results */}
           {booksList.length === 0 && (
-            <Box sx={{ textAlign: 'center', my: 4 }}>
+            <Box sx={{ textAlign: "center", my: 4 }}>
               <Typography variant="h6" color="text.secondary">
                 No books found matching your criteria
               </Typography>
@@ -186,7 +191,7 @@ const Books = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
               <Pagination
                 count={totalPages}
                 page={page}
@@ -226,7 +231,7 @@ const Books = () => {
             variant="contained"
             disabled={exchangeLoading || !exchangeMessage.trim()}
           >
-            {exchangeLoading ? 'Sending Request...' : 'Send Request'}
+            {exchangeLoading ? "Sending Request..." : "Send Request"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -234,4 +239,4 @@ const Books = () => {
   );
 };
 
-export default Books; 
+export default Books;

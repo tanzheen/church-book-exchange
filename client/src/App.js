@@ -1,28 +1,43 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material';
-import { AuthProvider } from './context/AuthContext';
-import Layout from './components/Layout';
-import useAuth from './hooks/useAuth';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material";
+import { AuthProvider } from "./context/AuthContext";
+import Layout from "./components/Layout";
+import useAuth from "./hooks/useAuth";
+import "./App.css";
+import Books from "./pages/Books";
+import supabase from "./config/supabaseClient";
 
 // Lazy load pages
-const Home = React.lazy(() => import('./pages/Home'));
-const Login = React.lazy(() => import('./pages/Login'));
-const Register = React.lazy(() => import('./pages/Register'));
-const Books = React.lazy(() => import('./pages/Books'));
-const BookDetails = React.lazy(() => import('./pages/BookDetails'));
-const Profile = React.lazy(() => import('./pages/Profile'));
-const MyBooks = React.lazy(() => import('./pages/MyBooks'));
-const Exchanges = React.lazy(() => import('./pages/Exchanges'));
+const Home = React.lazy(() => import("./pages/Home"));
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
+const BookDetails = React.lazy(() => import("./pages/BookDetails"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const MyBooks = React.lazy(() => import("./pages/MyBooks"));
+const Exchanges = React.lazy(() => import("./pages/Exchanges"));
 
 // Create theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: "#1a1a2e",
     },
     secondary: {
-      main: '#dc004e',
+      main: "#dc004e",
+    },
+  },
+  typography: {
+    h2: {
+      fontWeight: 700,
+    },
+    h5: {
+      fontWeight: 400,
     },
   },
 });
@@ -43,6 +58,20 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
+  // Example function to test Supabase connection
+  const testConnection = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("books") // replace 'books' with your table name
+        .select("*");
+
+      if (error) throw error;
+      console.log("Data:", data);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>

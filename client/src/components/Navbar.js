@@ -1,127 +1,48 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Box,
-  Menu,
-  MenuItem,
-  Avatar,
-} from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
-import { useAuth } from '../hooks/useAuth';
+import React from "react";
+import { Link } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useAuth } from "../hooks/useAuth";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    handleClose();
-    logout();
-  };
+  const { user } = useAuth();
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="transparent" elevation={0}>
       <Toolbar>
         <Typography
           variant="h6"
-          component={RouterLink}
+          component={Link}
           to="/"
-          sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
+          sx={{
+            flexGrow: 1,
+            textDecoration: "none",
+            color: "inherit",
+            fontWeight: "bold",
+          }}
         >
           Church Book Exchange
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Button
-            color="inherit"
-            component={RouterLink}
-            to="/books"
-            sx={{ mr: 2 }}
-          >
-            Browse Books
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button component={Link} to="/books" color="inherit">
+            Available Books
           </Button>
 
-          {user ? (
+          {!user && (
             <>
-              <Button
-                color="inherit"
-                component={RouterLink}
-                to="/exchanges"
-                sx={{ mr: 2 }}
-              >
-                My Exchanges
-              </Button>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <Avatar sx={{ width: 32, height: 32 }}>
-                  {user.name.charAt(0)}
-                </Avatar>
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem
-                  component={RouterLink}
-                  to="/profile"
-                  onClick={handleClose}
-                >
-                  Profile
-                </MenuItem>
-                <MenuItem
-                  component={RouterLink}
-                  to="/my-books"
-                  onClick={handleClose}
-                >
-                  My Books
-                </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
-            </>
-          ) : (
-            <>
-              <Button
-                color="inherit"
-                component={RouterLink}
-                to="/login"
-                sx={{ mr: 1 }}
-              >
+              <Button component={Link} to="/login" color="inherit">
                 Login
               </Button>
               <Button
-                color="inherit"
-                component={RouterLink}
+                component={Link}
                 to="/register"
-                variant="outlined"
+                variant="contained"
+                sx={{
+                  backgroundColor: "#1a1a2e",
+                  "&:hover": {
+                    backgroundColor: "#2a2a3e",
+                  },
+                }}
               >
                 Register
               </Button>
@@ -133,4 +54,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;
